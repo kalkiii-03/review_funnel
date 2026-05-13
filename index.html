@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Share Your Experience</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Fraunces:wght@600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #FF6B35;
+            --primary-dark: #E85A28;
+            --secondary: #FFA600;
+            --bg-light: #FFFBF7;
+            --bg-white: #FFFFFF;
+            --text-dark: #1A1A1A;
+            --text-gray: #6B6B6B;
+            --shadow-sm: 0 2px 8px rgba(255, 107, 53, 0.08);
+            --shadow-md: 0 8px 24px rgba(255, 107, 53, 0.12);
+            --shadow-lg: 0 16px 48px rgba(255, 107, 53, 0.16);
+            --border-radius: 16px;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: linear-gradient(135deg, #FFFBF7 0%, #FFE8DC 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            color: var(--text-dark);
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Decorative background elements */
+        body::before {
+            content: '';
+            position: fixed;
+            top: -50%;
+            right: -20%;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(255, 166, 0, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+            z-index: 0;
+            animation: float 20s ease-in-out infinite;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            bottom: -30%;
+            left: -10%;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(255, 107, 53, 0.12) 0%, transparent 70%);
+            border-radius: 50%;
+            z-index: 0;
+            animation: float 15s ease-in-out infinite reverse;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            25% { transform: translate(20px, 30px) rotate(5deg); }
+            50% { transform: translate(0, 50px) rotate(0deg); }
+            75% { transform: translate(-20px, 30px) rotate(-5deg); }
+        }
+
+        .container {
+            max-width: 480px;
+            width: 100%;
+            position: relative;
+            z-index: 1;
+        }
+
+        .card {
+            background: var(--bg-white);
+            border-radius: 24px;
+            padding: 48px 32px;
+            box-shadow: var(--shadow-lg);
+            position: relative;
+            overflow: hidden;
+            animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%);
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 8px;
+        }
+
+        .logo-emoji {
+            font-size: 64px;
+            display: inline-block;
+            animation: bounce 2s ease-in-out infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        h1 {
+            font-family: 'Fraunces', serif;
+            font-size: 32px;
+            font-weight: 700;
+            text-align: center;
+            color: var(--text-dark);
+            margin-bottom: 12px;
+            line-height: 1.2;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: var(--text-gray);
+            font-size: 16px;
+            margin-bottom: 40px;
+            font-weight: 400;
+        }
+
+        /* Rating Screen */
+        .screen {
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .stars-container {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        .star {
+            font-size: 56px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            filter: grayscale(1);
+            opacity: 0.3;
+            user-select: none;
+        }
+
+        .star:hover {
+            transform: scale(1.2) rotate(10deg);
+            filter: grayscale(0);
+            opacity: 1;
+        }
+
+        .star.active {
+            filter: grayscale(0);
+            opacity: 1;
+            animation: starPop 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes starPop {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.3) rotate(10deg); }
+            100% { transform: scale(1); }
+        }
+
+        .rating-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 40px;
+            padding: 0 8px;
+        }
+
+        .rating-label {
+            font-size: 13px;
+            color: var(--text-gray);
+            font-weight: 500;
+        }
+
+        /* Review Screen */
+        .review-box {
+            background: var(--bg-light);
+            border-radius: var(--border-radius);
+            padding: 24px;
+            margin-bottom: 24px;
+            border: 2px solid rgba(255, 107, 53, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .review-box::before {
+            content: '"';
+            position: absolute;
+            top: -10px;
+            left: 16px;
+            font-size: 80px;
+            color: rgba(255, 107, 53, 0.1);
+            font-family: Georgia, serif;
+            line-height: 1;
+        }
+
+        .review-text {
+            font-size: 18px;
+            line-height: 1.6;
+            color: var(--text-dark);
+            position: relative;
+            z-index: 1;
+            font-weight: 400;
+        }
+
+        .button-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .btn {
+            padding: 18px 24px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            font-family: 'DM Sans', sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .btn:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background: var(--bg-light);
+            color: var(--text-dark);
+            border: 2px solid rgba(255, 107, 53, 0.2);
+        }
+
+        .btn-secondary:hover {
+            background: white;
+            border-color: var(--primary);
+            transform: translateY(-1px);
+        }
+
+        .btn-icon {
+            font-size: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .btn-text {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Feedback Screen */
+        .feedback-emoji {
+            text-align: center;
+            font-size: 72px;
+            margin-bottom: 16px;
+            animation: bounce 2s ease-in-out infinite;
+        }
+
+        .feedback-form {
+            margin-bottom: 24px;
+        }
+
+        .textarea {
+            width: 100%;
+            min-height: 120px;
+            padding: 16px;
+            border: 2px solid rgba(255, 107, 53, 0.2);
+            border-radius: 12px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 15px;
+            resize: vertical;
+            transition: all 0.3s ease;
+            background: var(--bg-light);
+            color: var(--text-dark);
+        }
+
+        .textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: white;
+            box-shadow: 0 0 0 4px rgba(255, 107, 53, 0.1);
+        }
+
+        .textarea::placeholder {
+            color: var(--text-gray);
+        }
+
+        /* Success Messages */
+        .success-message {
+            text-align: center;
+        }
+
+        .success-emoji {
+            font-size: 80px;
+            margin-bottom: 16px;
+            display: inline-block;
+            animation: successPop 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes successPop {
+            0% { transform: scale(0); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        .success-title {
+            font-family: 'Fraunces', serif;
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 12px;
+        }
+
+        .success-text {
+            color: var(--text-gray);
+            font-size: 15px;
+            line-height: 1.6;
+            margin-bottom: 24px;
+        }
+
+        /* Copy Notification */
+        .copy-notification {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--text-dark);
+            color: white;
+            padding: 16px 24px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 14px;
+            box-shadow: var(--shadow-lg);
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .copy-notification.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .card {
+                padding: 40px 24px;
+            }
+
+            h1 {
+                font-size: 28px;
+            }
+
+            .stars-container {
+                gap: 12px;
+            }
+
+            .star {
+                font-size: 48px;
+            }
+
+            .review-text {
+                font-size: 16px;
+            }
+        }
+
+        /* Loading Animation */
+        .loading {
+            display: inline-block;
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background: currentColor;
+            animation: loading 1s ease-in-out infinite;
+        }
+
+        @keyframes loading {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
+        }
+
+        .loading::before,
+        .loading::after {
+            content: '';
+            display: inline-block;
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background: currentColor;
+            margin-left: 6px;
+        }
+
+        .loading::before {
+            animation: loading 1s ease-in-out 0.2s infinite;
+        }
+
+        .loading::after {
+            animation: loading 1s ease-in-out 0.4s infinite;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <!-- Rating Screen -->
+            <div id="ratingScreen" class="screen active">
+                <div class="logo">
+                    <div class="logo-emoji">☕</div>
+                </div>
+                <h1>How was your experience?</h1>
+                <p class="subtitle">Your feedback helps us serve you better</p>
+                
+                <div class="stars-container" id="starsContainer">
+                    <span class="star" data-rating="1">⭐</span>
+                    <span class="star" data-rating="2">⭐</span>
+                    <span class="star" data-rating="3">⭐</span>
+                    <span class="star" data-rating="4">⭐</span>
+                    <span class="star" data-rating="5">⭐</span>
+                </div>
+                
+                <div class="rating-labels">
+                    <span class="rating-label">Poor</span>
+                    <span class="rating-label">Excellent</span>
+                </div>
+            </div>
+
+            <!-- Review Screen (for 4-5 stars) -->
+            <div id="reviewScreen" class="screen">
+                <div class="logo">
+                    <div class="logo-emoji">🌟</div>
+                </div>
+                <h1>Share on Google!</h1>
+                <p class="subtitle">We've prepared a review for you</p>
+                
+                <div class="review-box">
+                    <p class="review-text" id="reviewText"></p>
+                </div>
+                
+                <div class="button-group">
+                    <button class="btn btn-primary" id="copyBtn">
+                        <span class="btn-icon">📋</span>
+                        <span class="btn-text">Copy Review</span>
+                    </button>
+                    <button class="btn btn-secondary" id="openGoogleBtn">
+                        <span class="btn-icon">🔗</span>
+                        <span class="btn-text">Open Google Reviews</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Feedback Screen (for 1-3 stars) -->
+            <div id="feedbackScreen" class="screen">
+                <div class="feedback-emoji">😔</div>
+                <h1>We're sorry!</h1>
+                <p class="subtitle">Tell us what went wrong so we can improve</p>
+                
+                <div class="feedback-form">
+                    <textarea 
+                        class="textarea" 
+                        id="feedbackText" 
+                        placeholder="Share your concerns with us..."
+                    ></textarea>
+                </div>
+                
+                <div class="button-group">
+                    <button class="btn btn-primary" id="submitFeedbackBtn">
+                        <span class="btn-icon">📤</span>
+                        <span class="btn-text">Submit Feedback</span>
+                    </button>
+                    <button class="btn btn-secondary" id="skipFeedbackBtn">
+                        <span class="btn-text">Skip</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Success Screen (after feedback) -->
+            <div id="successScreen" class="screen">
+                <div class="success-message">
+                    <div class="success-emoji">💚</div>
+                    <h2 class="success-title">Thank you!</h2>
+                    <p class="success-text">
+                        Your feedback has been received. We'll work hard to make your next visit perfect!
+                    </p>
+                    <button class="btn btn-primary" onclick="location.reload()">
+                        <span class="btn-text">Done</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Success Screen (after Google review) -->
+            <div id="googleSuccessScreen" class="screen">
+                <div class="success-message">
+                    <div class="success-emoji">🎉</div>
+                    <h2 class="success-title">You're amazing!</h2>
+                    <p class="success-text">
+                        Thanks for taking the time to share your experience. Your review means the world to us!
+                    </p>
+                    <button class="btn btn-primary" onclick="location.reload()">
+                        <span class="btn-text">Done</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Copy Notification -->
+    <div class="copy-notification" id="copyNotification">
+        ✓ Review copied to clipboard!
+    </div>
+
+    <script>
+        // Configuration
+        const GOOGLE_REVIEW_URL = 'https://search.google.com/local/writereview?fid=0x396673b7c024566f:0x60c1add171d1ff9b';
+        const GEMINI_API_KEY = 'AIzaSyB-a2KKZCfsBoabUEIhHBeA-1Mk0jRMvUo'; // Do not share this publicly!
+
+        // Review Templates
+        const reviewTemplates = {
+            5: {
+                openings: [
+                    'Bhai kya mast place hai! 😍',
+                    'Ek dum jhakaas experience! Highly impressed.',
+                    'Maza aa gaya yahan aakar, brilliant setup.',
+                    'Best café in town, no doubt! ☕',
+                    'Yahan ki vibes hi kuch alag hain, loved it.',
+                    'Service aur food dono top class! 🌟',
+                    'Mera favorite spot ban gaya hai ye.',
+                    'Har cheez perfect thi, literally everything!',
+                    'Absolutely loved my visit here!',
+                    'Fantastic experience from start to finish.'
+                ],
+                subjects: [
+                    'Coffee ka taste ek dum kadak tha aur staff bhi bahut friendly hai.',
+                    'Ambience bahut cozy hai aur music bhi kaafi soothing hai.',
+                    'Paneer tikka aur cold coffee try kiya, dono lajawab the.',
+                    'Staff ka behaviour bahut acha hai, fast service mili.',
+                    'Cleanliness aur hygiene ka pura dhyan rakha gaya hai.',
+                    'Presentation dekh kar hi maza aa gaya, taste toh aur bhi better tha.',
+                    'Doston ke saath chill karne ke liye best jagah hai.',
+                    'Har ek bite mein asli swaad tha, amazing quality.',
+                    'The coffee was expertly brewed and the staff were incredibly welcoming.',
+                    'Wonderful atmosphere paired with top-notch food quality.'
+                ],
+                endings: [
+                    'Dobara zaroor aaunga! See you soon.',
+                    'Highly recommend karta hoon sabko.',
+                    'Aap log bhi ek baar zaroor visit karein.',
+                    '5 stars toh bante hain! ⭐⭐⭐⭐⭐',
+                    'Paisa vasool experience! Value for money.',
+                    'Cant wait to come back with my friends.',
+                    'Best memory yahan ki, thank you guys.',
+                    'Shukriya itni achi service ke liye.',
+                    'Definitely my new favorite spot!',
+                    'Can\'t wait to visit again soon!'
+                ]
+            },
+            4: {
+                openings: [
+                    'Acha experience raha yahan, worth it.',
+                    'Badiya jagah hai doston ke saath hangout ke liye.',
+                    'Kaafi sahi experience tha overall.',
+                    'Taste wise toh koi jawab nahi, bahut badiya.',
+                    'Ek solid choice hai coffee aur snacks ke liye.',
+                    'Overall sab kuch badiya tha, enjoyed it.',
+                    'Visit karke maza aaya, good vibes.',
+                    'Sahi place hai weekend chill ke liye.',
+                    'Really enjoyed the atmosphere here.',
+                    'Great spot for a quick coffee break.'
+                ],
+                subjects: [
+                    'Food quality bahut achi hai, bas service thodi fast ho sakti thi.',
+                    'Ambience kaafi cool hai aur seating arrangement bhi comfortable hai.',
+                    'Prices thode zyada hain par taste compensate kar deta hai.',
+                    'Staff helpful hai aur menu mein options bhi kaafi hain.',
+                    'Evening mein yahan ki lighting aur decor bahut pyara lagta hai.',
+                    'Good coffee and nice snacks, definitely worth a try.',
+                    'Jagah thodi crowded thi par management ne sab ache se handle kiya.',
+                    'Mera experience kaafi pleasant raha, food was fresh.',
+                    'The snacks were delicious and the service was very professional.',
+                    'Lovely decor and a good variety of drinks to choose from.'
+                ],
+                endings: [
+                    'Ek baar visit toh banta hai sabka.',
+                    'Will come back again for sure, loved it.',
+                    'Safe and good choice for anyone.',
+                    'Recommended for small gatherings and dates.',
+                    'Achi memories ke saath wapas ja raha hoon.',
+                    'Value for money spot, check it out.',
+                    'Worth checking out if you are nearby.',
+                    'Acha laga yahan aakar, nice experience.',
+                    'I\'ll be returning soon for sure.',
+                    'A very pleasant experience overall.'
+                ]
+            }
+        };
+
+        // State
+        let selectedRating = 0;
+        let generatedReview = '';
+
+        // Screen Management
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+            document.getElementById(screenId).classList.add('active');
+        }
+
+        // Review Generation (AI with Template Fallback)
+        async function generateReview(rating) {
+            try {
+                // 1. Try to use AI first
+                if (!GEMINI_API_KEY || GEMINI_API_KEY === 'YOUR_API_KEY_HERE') {
+                    throw new Error('No API key configured.');
+                }
+
+                const prompt = rating === 5 
+                    ? "Write a short, enthusiastic 5-star Google review for a place named CyOwl. Mention great service and a nice vibe. Make it sound like a real, casual customer. Use some Hinglish (Hindi + English) casually. Under 3 sentences. Do not use quotes around the text."
+                    : "Write a positive 4-star Google review for a place named CyOwl. Mention the experience was good but leave tiny room for improvement. Make it sound like a real customer. Under 3 sentences. Do not use quotes around the text.";
+
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{ parts: [{ text: prompt }] }],
+                        generationConfig: { temperature: 0.8, maxOutputTokens: 100 }
+                    })
+                });
+
+                if (!response.ok) throw new Error('API Request Failed');
+                
+                const data = await response.json();
+                const aiReview = data.candidates[0].content.parts[0].text.trim();
+                
+                if (aiReview) {
+                    console.log("Successfully generated AI review.");
+                    return aiReview;
+                }
+                throw new Error('Empty AI response');
+
+            } catch (error) {
+                console.log('AI Generation failed, falling back to templates:', error.message);
+                
+                // 2. Fallback to Templates if AI fails
+                const templates = reviewTemplates[rating];
+                if (!templates) return '';
+
+                const opening = templates.openings[Math.floor(Math.random() * templates.openings.length)];
+                const subject = templates.subjects[Math.floor(Math.random() * templates.subjects.length)];
+                const ending = templates.endings[Math.floor(Math.random() * templates.endings.length)];
+
+                const structures = [
+                    `${opening} ${subject} ${ending}`,
+                    `${subject} ${ending}`,
+                    `${opening} ${ending}`,
+                    `${opening} ${subject}`,
+                ];
+
+                return structures[Math.floor(Math.random() * structures.length)];
+            }
+        }
+
+        // Copy to Clipboard
+        async function copyToClipboard(text) {
+            try {
+                await navigator.clipboard.writeText(text);
+                showCopyNotification();
+                return true;
+            } catch (err) {
+                // Fallback for older browsers
+                const textArea = document.createElement('textarea');
+                textArea.value = text;
+                textArea.style.position = 'fixed';
+                textArea.style.opacity = '0';
+                document.body.appendChild(textArea);
+                textArea.select();
+                try {
+                    document.execCommand('copy');
+                    showCopyNotification();
+                    return true;
+                } catch (err) {
+                    console.error('Copy failed:', err);
+                    return false;
+                }
+                document.body.removeChild(textArea);
+            }
+        }
+
+        // Show Copy Notification
+        function showCopyNotification() {
+            const notification = document.getElementById('copyNotification');
+            notification.classList.add('show');
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        // Star Rating Click Handler
+        document.getElementById('starsContainer').addEventListener('click', (e) => {
+            if (e.target.classList.contains('star')) {
+                selectedRating = parseInt(e.target.dataset.rating);
+                
+                // Update star visuals
+                document.querySelectorAll('.star').forEach((star, index) => {
+                    if (index < selectedRating) {
+                        star.classList.add('active');
+                    } else {
+                        star.classList.remove('active');
+                    }
+                });
+
+                // Wait for animation, then route
+                setTimeout(async () => {
+                    if (selectedRating >= 4) {
+                        // Switch to review screen immediately to show loading state
+                        showScreen('reviewScreen');
+                        document.getElementById('reviewText').innerHTML = '<span class="loading"></span> Generating perfect review...';
+                        
+                        // Generate AI Review (or fallback)
+                        generatedReview = await generateReview(selectedRating);
+                        
+                        // Update text with result
+                        document.getElementById('reviewText').textContent = generatedReview;
+                    } else {
+                        // Show feedback form
+                        showScreen('feedbackScreen');
+                    }
+                }, 600);
+            }
+        });
+
+        // Copy Button
+        document.getElementById('copyBtn').addEventListener('click', async () => {
+            const success = await copyToClipboard(generatedReview);
+            if (success) {
+                document.getElementById('copyBtn').innerHTML = `
+                    <span class="btn-icon">✓</span>
+                    <span class="btn-text">Copied!</span>
+                `;
+                setTimeout(() => {
+                    document.getElementById('copyBtn').innerHTML = `
+                        <span class="btn-icon">📋</span>
+                        <span class="btn-text">Copy Review</span>
+                    `;
+                }, 2000);
+            }
+        });
+
+        // Open Google Reviews
+        document.getElementById('openGoogleBtn').addEventListener('click', () => {
+            window.open(GOOGLE_REVIEW_URL, '_blank');
+            setTimeout(() => {
+                showScreen('googleSuccessScreen');
+            }, 500);
+        });
+
+        // Submit Feedback
+        document.getElementById('submitFeedbackBtn').addEventListener('click', () => {
+            const feedback = document.getElementById('feedbackText').value;
+            
+            // In V2, you'd send this to your backend
+            // For now, just show success
+            console.log('Feedback submitted:', feedback);
+            
+            showScreen('successScreen');
+        });
+
+        // Skip Feedback
+        document.getElementById('skipFeedbackBtn').addEventListener('click', () => {
+            showScreen('successScreen');
+        });
+
+        // Star hover effect
+        document.querySelectorAll('.star').forEach((star, index) => {
+            star.addEventListener('mouseenter', () => {
+                document.querySelectorAll('.star').forEach((s, i) => {
+                    if (i <= index) {
+                        s.style.filter = 'grayscale(0)';
+                        s.style.opacity = '1';
+                    }
+                });
+            });
+            
+            star.addEventListener('mouseleave', () => {
+                document.querySelectorAll('.star').forEach((s, i) => {
+                    if (!s.classList.contains('active')) {
+                        s.style.filter = 'grayscale(1)';
+                        s.style.opacity = '0.3';
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
