@@ -584,7 +584,8 @@
 
     <script>
         // Configuration
-        const GOOGLE_REVIEW_URL = 'https://search.google.com/local/writereview?placeid=ChIJ-58n3c3C5zsRz-j3s3C5zsQ';
+        const GOOGLE_PLACE_ID = 'ChIJ-58n3c3C5zsRz-j3s3C5zsQ'; // <--- Put your Cafe's Google Place ID here
+        const GOOGLE_REVIEW_URL = `https://search.google.com/local/writereview?placeid=${GOOGLE_PLACE_ID}`;
         const GEMINI_API_KEY = 'AIzaSyB-a2KKZCfsBoabUEIhHBeA-1Mk0jRMvUo'; // Do not share this publicly!
 
         // Review Templates
